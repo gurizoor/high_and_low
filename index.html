@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="jp">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>High and low</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        
+        <h1 class="title">High and Low</h1>
+
+        <div id="points_held">所持ポイント:<span id="points"></span></div>
+        <div id="notice"></div>
+        <label id="bet_label" for="bet-input">ベット:<input type="number" id="bet_input"></label>
+
+        <canvas id="canvas" width="350px" height="300px">このブラウザはCanvasをサポートしていません</canvas>
+
+        <button id="High" type="button">High</button>
+        <button id="Low" type="button">Low</button>
+
+        <script src="dist/main.js"></script>
+    </body>
+</html>
