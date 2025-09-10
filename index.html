@@ -10,16 +10,22 @@
     </head>
     <body>
         
-        <h1 class="title">High and Low</h1>
+        <h1 id="title" class="text">High and Low</h1>
 
-        <div id="points_held">所持ポイント:<span id="points"></span></div>
+        <div id="points_held" class="text">所持ポイント:<span id="points"></span></div>
         <div id="notice"></div>
-        <label id="bet_label" for="bet-input">ベット:<input type="number" id="bet_input"></label>
 
         <canvas id="canvas" width="350px" height="300px">このブラウザはCanvasをサポートしていません</canvas>
+        
+        <div id="bet_div" class="text">
+            <label id="bet_label" for="bet-input">ベット:<input type="number" id="bet_input"></label>
+            <button id="bet_button" class="button" type="button">Bet</button>
+        </div>
 
-        <button id="High" type="button">High</button>
-        <button id="Low" type="button">Low</button>
+        <div id="high_low_div">
+            <button id="high" class="button" type="button">High</button>
+            <button id="low" class="button" type="button">Low</button>
+        </div>
 
         <script src="dist/main.js"></script>
     </body>

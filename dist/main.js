@@ -4,8 +4,11 @@ const context = canvas.getContext("2d");
 const points = document.getElementById("points");
 points.innerHTML = "1000";
 const bet = document.getElementById("bet_input");
-const High = document.getElementById("High");
-const Low = document.getElementById("Low");
+const bet_div = document.getElementById("bet_div");
+const bet_button = document.getElementById("bet_button");
+const high_low_div = document.getElementById("high_low_div");
+const high = document.getElementById("high");
+const low = document.getElementById("low");
 function random_number(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -21,7 +24,12 @@ function draw_cards(card_info) {
     drawRoundedRect(context, card_info_inside[0], card_info_inside[1], card_info_inside[2], card_info_inside[3], card_info_inside[4], "white");
     draw_text(context, String(current_card), card_info[0] + 50, card_info[1] + 150, 100, true);
 }
-draw_cards(card_info);
+function draw_cards_hidden(card_info) {
+    const card_info_inside = [card_info[0] + 10, card_info[1] + 10, card_info[2] - 20, card_info[3] - 20, card_info[4]];
+    drawRoundedRect(context, card_info[0], card_info[1], card_info[2], card_info[3], card_info[4], "black");
+    drawRoundedRect(context, card_info_inside[0], card_info_inside[1], card_info_inside[2], card_info_inside[3], card_info_inside[4], "white");
+}
+draw_cards_hidden(card_info);
 function drawRoundedRect(ctx, x, y, width, height, radius, fillStyle = "black") {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
@@ -45,11 +53,14 @@ function draw_text(ctx, text, x, y, size = 48, fixed = false) {
     }
     ctx.strokeText(text, x, y);
 }
-High.addEventListener("click", () => {
-    betting(true);
+bet_button.addEventListener("click", () => {
+    betting();
 });
-Low.addEventListener("click", () => {
-    betting(false);
+high.addEventListener("click", () => {
+    high_low_judge("high");
+});
+low.addEventListener("click", () => {
+    high_low_judge("low");
 });
 let number_of_timer = 0;
 function notify(text) {
@@ -70,46 +81,83 @@ function reset_notice() {
     }
     notice.innerHTML = "";
 }
-function betting(is_high) {
+high_low_div.style.display = "none";
+function change_mode() {
+    if (high_low_div.style.display == "none") {
+        high_low_div.style.display = "block";
+        bet_div.style.display = "none";
+        draw_cards(card_info);
+    }
+    else {
+        bet_div.style.display = "block";
+        high_low_div.style.display = "none";
+        draw_cards_hidden(card_info);
+    }
+}
+let bet_point;
+function get_points() {
+    return parseInt(points.innerHTML);
+}
+function set_points(point) {
+    points.innerHTML = String(point);
+}
+function add_points(point) {
+    set_points(get_points() + point);
+}
+function minus_points(point) {
+    set_points(get_points() - point);
+}
+function betting() {
     if (parseInt(points.innerHTML) < parseInt(bet.value)) {
         notify("ポイントが不足しています");
         return;
     }
-    let is_bet = !(bet.value == "");
-    let is_crrect = is_high == high_or_low();
-    if (is_bet) {
-        console.log("betted");
-        if (is_crrect) {
-            let magnify = 1.5;
-            let reward = parseInt(bet.value) * magnify;
-            points.innerHTML = String(parseInt(points.innerHTML) + reward);
-            notify("Correct! " + String(reward) + "ポイントゲットしました");
-        }
-        else {
-            points.innerHTML = String(parseInt(points.innerHTML) - parseInt(bet.value));
-            notify("Wrong!" + String(bet.value) + "ポイント失いしました");
-        }
+    if (parseInt(bet.value) <= 0 || bet.value == "") {
+        notify("0より大きい数を入力してください");
+        return;
+    }
+    bet_point = parseInt(bet.value);
+    minus_points(bet_point);
+    change_mode();
+}
+function high_low_judge(high_low) {
+    let is_correct = high_low == high_or_low();
+    let judge;
+    if (is_correct) {
+        judge = "correct";
+    }
+    else if ("draw" == high_or_low()) {
+        judge = "draw";
     }
     else {
-        console.log("is not betted");
-        if (is_crrect) {
-            const reward = 50;
-            points.innerHTML = String(parseInt(points.innerHTML) + reward);
-            notify("Correct!" + reward + "ポイントゲットしました");
-        }
-        else {
-            notify("Wrong!");
-        }
+        judge = "wrong";
     }
-    current_card = next_card;
+    switch (judge) {
+        case "correct":
+            const reward = bet_point * 2.0;
+            add_points(reward);
+            notify("Correct!" + reward + "ポイントゲットしました");
+            break;
+        case "draw":
+            add_points(bet_point);
+            notify("draw!ベットしたポイントは返却されます");
+            break;
+        case "wrong":
+            notify("Wrong!" + bet_point + "ポイント失いしました");
+            break;
+    }
+    current_card = random_cards();
     next_card = random_cards();
-    draw_cards(card_info);
+    change_mode();
 }
 function high_or_low() {
     if (current_card < next_card) {
-        return true;
+        return "high";
+    }
+    else if (next_card < current_card) {
+        return "low";
     }
     else {
-        return false;
+        return "draw";
     }
 }
